@@ -58,6 +58,8 @@ type providerMeta struct {
 // Config is the configuration structure used to instantiate the Google
 // provider.
 type Config struct {
+	HTTPClient *http.Client
+
 	AccessToken                        string
 	Credentials                        string
 	ImpersonateServiceAccount          string
@@ -366,7 +368,7 @@ func (c *Config) LoadAndValidate(ctx context.Context) error {
 	cleanCtx := context.WithValue(ctx, oauth2.HTTPClient, cleanhttp.DefaultClient())
 
 	// 1. MTLS TRANSPORT/CLIENT - sets up proper auth headers
-	client, _, err := transport.NewHTTPClient(cleanCtx, option.WithTokenSource(tokenSource))
+	client, _, err := transport.NewHTTPClient(cleanCtx, option.WithTokenSource(tokenSource), option.WithHTTPClient(c.HTTPClient))
 	if err != nil {
 		return err
 	}
